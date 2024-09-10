@@ -25,6 +25,8 @@ class ProductSpider(scrapy.Spider):
             title = product.css("h2.ProductItem__Title a::text").get().strip()
             part_number = product.css("p.meta.sku::text").get()
             part_number = part_number.strip() if part_number else ""
+            category = product.css('p.meta:not(.sku)::text').get()
+            category = category.strip() if category else ''
             product_link = product.css("a.ProductItem__ImageWrapper::attr(href)").get()
             product_link = (
                 response.urljoin(product_link.strip()) if product_link else ""
@@ -45,6 +47,7 @@ class ProductSpider(scrapy.Spider):
                 self.all_products.append(
                     {
                         "title": title,
+                        "category": category,
                         "part_number": part_number,
                         "product_link": product_link,
                         "main_image_url": main_image_url,
