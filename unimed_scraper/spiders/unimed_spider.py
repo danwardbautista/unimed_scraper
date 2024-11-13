@@ -46,12 +46,12 @@ class ProductSpider(scrapy.Spider):
             if title:
                 self.all_products.append(
                     {
-                        "title": title,
-                        "category": category,
-                        "part_number": part_number,
+                        # "title": title,
+                        # "category": category,
+                        # "part_number": part_number,
                         "product_link": product_link,
-                        "main_image_url": main_image_url,
-                        "hover_image_url": hover_image_url,
+                        # "main_image_url": main_image_url,
+                        # "hover_image_url": hover_image_url,
                     }
                 )
         self.log(f"Collected {len(product_items)} products from {response.url}.")
