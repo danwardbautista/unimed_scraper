@@ -3,6 +3,7 @@ import json
 import os
 from datetime import datetime
 
+
 class ProductSpider(scrapy.Spider):
     name = "products"
     allowed_domains = ["unimed.cn"]
@@ -25,8 +26,8 @@ class ProductSpider(scrapy.Spider):
             title = product.css("h2.ProductItem__Title a::text").get().strip()
             part_number = product.css("p.meta.sku::text").get()
             part_number = part_number.strip() if part_number else ""
-            category = product.css('p.meta:not(.sku)::text').get()
-            category = category.strip() if category else ''
+            category = product.css("p.meta:not(.sku)::text").get()
+            category = category.strip() if category else ""
             product_link = product.css("a.ProductItem__ImageWrapper::attr(href)").get()
             product_link = (
                 response.urljoin(product_link.strip()) if product_link else ""
@@ -44,12 +45,17 @@ class ProductSpider(scrapy.Spider):
                 response.urljoin(hover_image_url.strip()) if hover_image_url else ""
             )
             if title:
+                product_id = product_link.rstrip("/").split("/")[
+                    -1
+                ]  # Extract last part of URL
+
                 self.all_products.append(
                     {
                         # "title": title,
                         # "category": category,
                         # "part_number": part_number,
                         "product_link": product_link,
+                        "id": product_id,
                         # "main_image_url": main_image_url,
                         # "hover_image_url": hover_image_url,
                     }
@@ -64,12 +70,12 @@ class ProductSpider(scrapy.Spider):
                     yield scrapy.Request(next_page_url, callback=self.parse)
 
     def close(self, reason):
-        if not os.path.exists('results'):
-            os.makedirs('results')
-        
+        if not os.path.exists("results"):
+            os.makedirs("results")
+
         today = datetime.now().strftime("%Y-%m-%d")
-        filename = os.path.join('results', f"product_data_{today}.json")
-        
+        filename = os.path.join("results", f"product_data_{today}.json")
+
         try:
             with open(filename, "w", encoding="utf-8") as f:
                 json.dump(self.all_products, f, ensure_ascii=False, indent=4)
